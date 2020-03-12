@@ -2,7 +2,7 @@
 
 Adds a field type to generate dropdowns in cascades and series.
 
-![Screenshot](resources/img/super-dropdown-icon6.png)
+![Screenshot](http://veryfine.work/assets/img/super-dropdown-icon6.png)
 
 ## Requirements
 
