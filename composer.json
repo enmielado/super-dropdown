@@ -1,5 +1,5 @@
 {
-    "name": "veryfinework/super-dropdown",
+    "name": "enmielado/super-dropdown",
     "description": "Adds a field type that generates side-by-side and cascading dropdown fields from data.",
     "type": "craft-plugin",
     "version": "1.0.0",
