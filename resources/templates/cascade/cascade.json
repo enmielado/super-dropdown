@@ -1,0 +1,62 @@
+[
+  {
+    "name": "desserts",
+    "options": [
+      {
+        "label": "Pies",
+        "value": "pies",
+        "subselect": {
+          "name": "pie-type",
+          "options": [
+            {
+              "label": "Sour Cherry",
+              "value": "sour-cherry"
+            },
+            {
+              "label": "Apple",
+              "value": "apple",
+              "subselect": {
+                "name": "apple-type",
+                "options": [
+                  {
+                    "label": "Salted Caramel Apple",
+                    "value": "salted-caramel-apple"
+                  },
+                  {
+                    "label": "Apple Crumb",
+                    "value": "apple-crumb"
+                  }
+                ]
+              }
+            },
+            {
+              "label": "Mud",
+              "value": "mud"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Cakes",
+        "value": "cakes",
+        "subselect": {
+          "name": "cake-type",
+          "options": [
+            {
+              "label": "Chocolate",
+              "value": "chocolate"
+            },
+            {
+              "label": "Carrot",
+              "value": "carrot"
+            }
+          ]
+        }
+      },
+      {
+        "label": "Cookies",
+        "value": "cookies"
+      }
+    ]
+  }
+]

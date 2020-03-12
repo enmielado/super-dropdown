@@ -1,0 +1,40 @@
+{
+    "name": "veryfinework/super-dropdown",
+    "description": "Adds a field type that generates side-by-side and cascading dropdown fields from data.",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "super dropdown"
+    ],
+    "support": {
+        "docs": "https://github.com/veryfinework/super-dropdown/blob/master/README.md",
+        "issues": "https://github.com/veryfinework/super-dropdown/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "very-fine",
+            "homepage": "https://github.com/veryfinework"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0-RC1"
+    },
+    "autoload": {
+        "psr-4": {
+          "veryfinework\\superdropdown\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Super dropdown",
+        "handle": "super-dropdown",
+        "hasCpSettings": false,
+        "hasCpSection": false,
+        "changelogUrl": "https://raw.githubusercontent.com/veryfinework/super-dropdown/master/CHANGELOG.md",
+        "class": "veryfinework\\superdropdown\\SuperDropdown"
+    }
+}

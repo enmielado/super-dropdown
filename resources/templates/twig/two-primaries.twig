@@ -1,0 +1,73 @@
+{# Side-by-side semester and year dropdowns #}
+{%- spaceless -%}
+
+{% set dropdowns = [
+  {
+    "name": "size",
+    "type": "primary",
+    "options": [
+      {
+        "label": "Small",
+        "value": "small"
+      },
+      {
+        "label": "Medium",
+        "value": "medium",
+        "subselect": "subsize"
+      },
+      {
+        "label": "Large",
+        "value": "large"
+      }
+    ]
+  },
+  {
+    "name": "subsize",
+    "options": [
+    {
+      "label": "Medium Small",
+      "value": "plae"
+    },
+    {
+      "label": "Medium Large",
+      "value": "britgh"
+    }
+  ]
+  },
+  {
+    "name": "color",
+    "type": "primary",
+    "options": [
+      {
+        "label": "Red",
+        "value": "red"
+      },
+      {
+        "label": "Blue",
+        "value": "blue",
+        "subselect": "subcolor"
+      },
+      {
+        "label": "Yellow",
+        "value": "yellow"
+      }
+    ]
+  },
+  {
+    "name": "subcolor",
+    "options": [
+    {
+      "label": "Pale",
+      "value": "plae"
+    },
+    {
+      "label": "Bright",
+      "value": "britgh"
+    }
+  ]
+  }
+] %}
+
+{{ dropdowns | json_encode() | raw }}
+
+{%- endspaceless -%}

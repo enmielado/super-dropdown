@@ -1,0 +1,29 @@
+form .input > .super-dropdown-field.select {
+    display: flex;
+    flex-wrap: wrap;
+}
+/* hide Craft dropdown arrow */
+.super-dropdown-field.select:after {
+    display: none;
+}
+.super-dropdown-field select {
+    width: fit-content;
+    background: transparent url(../img/down-angle.png) calc(100% - 8px) center no-repeat;
+    background-size: 7px;
+    margin-bottom: 5px;
+}
+.super-dropdown-field select.isConditional {
+    display: none;
+}
+.super-dropdown-field select.isConditional.isActive {
+    display: block;
+}
+.super-dropdown-field.layout-stacked {
+    flex-direction: column;
+}
+.super-dropdown-field.layout-stacked select {
+    min-width: 200px;
+}
+.super-dropdown-field.layout-inline select {
+    margin-right: 5px;
+}
