@@ -16,13 +16,12 @@ use craft\base\Field;
 use craft\helpers\Json;
 use craft\elements\Category;
 use craft\elements\Entry;
-use craft\helpers\ArrayHelper;
 use craft\helpers\Html;
-use craft\helpers\StringHelper;
-use craft\models\Section;
 use craft\web\View;
 
 use veryfinework\superdropdown\assetbundles\superdropdownfield\SuperdropdownFieldAsset;
+use veryfinework\superdropdown\sources\CategoriesSource;
+use veryfinework\superdropdown\sources\EntriesSource;
 
 
 /**
@@ -194,6 +193,7 @@ class Superdropdown extends Field
      */
     public function getSourceOptions(): array
     {
+        // context of 'modal' retrieves all groups, 'index' retrieves only groups editable by the user
         $availableCategoryGroups = Craft::$app->getElementIndexes()->getSources(Category::class, 'modal');
         $availableSections = Craft::$app->getElementIndexes()->getSources(Entry::class, 'modal');
 
@@ -261,8 +261,8 @@ class Superdropdown extends Field
 
         switch ($sourceType) {
             case 'element':
-                $elementsAndName = ($this->elementType === 'entries') ? $this->getEntries() : $this->getCategories();
-                $dropdownsArray = $this->convertElementsToDropdownsArray($elementsAndName['elements'], $elementsAndName['topLevelName']);
+                $elementSource = ($this->elementType === 'entries') ? new EntriesSource() : new CategoriesSource();
+                $dropdownsArray = $elementSource->getElementsAsDropdownArray($this);
                 break;
 
             case 'template':
@@ -270,7 +270,7 @@ class Superdropdown extends Field
                 $view->setTemplateMode(View::TEMPLATE_MODE_SITE);
 
                 $dropdownsArray = Json::decode( $view->renderTemplate(
-                    $fieldSettings['template']
+                    $fieldSettings['template'], ['field' => $this]
                 ));
 
                 $view->setTemplateMode($oldMode);
@@ -308,154 +308,6 @@ class Superdropdown extends Field
         );
     }
 
-
-    /**
-     *
-     * Get categories based on section
-     *
-     * @return array
-     */
-    public function getCategories(): array
-    {
-
-        $groupUId = StringHelper::afterLast($this->categoryGroup, ':');
-        $group = Craft::$app->categories->getGroupByUid($groupUId);
-        $maxLevels = $this->maxNestingLevel ? '<= '. $this->maxNestingLevel : null;
-
-        $categories = Category::find()
-            ->group($group)
-            ->level($maxLevels)
-            ->all();
-
-        // Fill in any gaps
-        $categoriesService = Craft::$app->getCategories();
-        $categoriesService->fillGapsInCategories($categories);
-
-        return [
-            'topLevelName' => $group->handle,
-            'elements' => $categories
-        ];
-
-    }
-
-    /**
-     *
-     * Get entries based on section
-     *
-     * @return array
-     */
-    public function getEntries(): array
-    {
-        $entryQuery = Entry::find();
-
-        $maxLevels = $this->maxNestingLevel ? '<= ' . $this->maxNestingLevel : null;
-
-        switch ($this->entrySection) {
-            case '*':
-                $entryQuery->withStructure()->level($maxLevels);
-                $topLevelName = 'entries';
-                break;
-
-            case 'singles':
-                $sectionsArray = Craft::$app->sections->getSectionsByType(Section::TYPE_SINGLE);
-                $sectionIds = ArrayHelper::getColumn($sectionsArray, 'id');
-                $entryQuery->sectionId($sectionIds);
-                $topLevelName = 'singles';
-                break;
-
-            default:
-                $sectionUId = StringHelper::afterLast($this->entrySection, ':');
-                $section = Craft::$app->sections->getSectionByUid($sectionUId);
-                $entryQuery->sectionId($section->id);
-                if ($section->type === Section::TYPE_STRUCTURE) {
-                    $entryQuery->withStructure()->level($maxLevels);
-                }
-                $topLevelName = $section->handle;
-        }
-
-        return [
-            'topLevelName' => $topLevelName,
-            'elements' => $entryQuery->all()
-        ];
-    }
-
-    /**
-     *
-     * Prepare entry data for use by the template
-     *
-     * @return array
-     */
-    public function convertElementsToDropdownsArray($elements, $topLevelName): array
-    {
-
-        $dropdowns = [];
-
-        $dropdowns[$topLevelName] = [
-            'name' => $topLevelName,
-            'type' => 'primary',
-            'options' => []
-        ];
-
-        foreach ($elements as $element) {
-
-            $label = $this->labelLength ? StringHelper::truncate($element->title, $this->labelLength) : $element->title;
-
-            $option = [
-                'label' => $label,
-                'value' => $element->id . ':' . $element->title
-            ];
-
-            // set select array key for for categories/entries
-            if ($this->elementType === 'categories') {
-                $selectName = (bool)$element->parent ? StringHelper::toKebabCase($element->parent->title) : $topLevelName;
-                $subselectName =  StringHelper::toKebabCase($element->title);
-            } else {
-                $selectName = (bool)$element->parent ? $element->parent->id : $topLevelName;
-                $subselectName = $element->id;
-            }
-
-            // create subselect array
-            if ($element->hasDescendants && $element->level < $this->maxNestingLevel) {
-
-                $option['subselect'] = $subselectName;
-
-                // create dropdown for subcategory with empty options
-                if (!array_key_exists($element->title, $dropdowns)) {
-                    $dropdowns[$subselectName] = [
-                        'name' => $subselectName,
-                        'type' => 'conditional',
-                        'options' => []
-                    ];
-                }
-            }
-
-            $dropdowns[$selectName]['options'][] = $option;
-
-        }
-
-        return $this->addBlankOptions($dropdowns);
-    }
-
-    public function addBlankOptions(&$dropdowns) {
-
-        // add blank options, skip the first
-        if ($this->blankOption) {
-            $first = true;
-            foreach ($dropdowns as &$dropdown) {
-                if ($first) {
-                    $first = false;
-                    continue;
-                }
-                array_unshift($dropdown['options'], [
-                    'label' => '--- select ---',
-                    'value' => ''
-                ]);
-            }
-        }
-
-        return $dropdowns;
-    }
-
     /**
      *
      * Prepare JSON data for use by the template
@@ -475,8 +327,10 @@ class Superdropdown extends Field
             $key = $dropdown['name'];
             $savedValue =  (!empty($value) && array_key_exists($key, $value)) ? $value[$key] : null;
 
-            if ($savedValue === null) {
-                if (array_key_exists('type', $dropdown) && $dropdown['type'] === 'primary') {
+            if ($savedValue === null)
+            {
+                if (array_key_exists('type', $dropdown) && $dropdown['type'] === 'primary')
+                {
                     $dropdown['initialvalue'] = '0';
                 } else {
                     $dropdown['initialvalue'] = '-1';
@@ -509,75 +363,5 @@ class Superdropdown extends Field
 
         return $allDropdowns;
 
-    }
-
-    /**
-     * Transforms a nested array of dropdowns into a flattened array
-     *
-     *
-     * @param $dataArray
-     * @param $value
-     * @return array
-     */
-    public function cascadingDropdowns($dataArray, $value): array
-    {
-
-        $allDropdowns = [];
-
-        $makeDropdown = static function( $dropdown, $level ) use ( &$makeDropdown, &$allDropdowns ) {
-
-            $dropdown['level'] = $level; // unused
-            $allDropdowns[$dropdown['name']] = $dropdown;
-
-            foreach ($dropdown['options'] as &$option) {
-                if(array_key_exists('subselect', $option)) {
-
-                    $subDropdown = $option['subselect'];
-                    $subDropdown['isConditional'] = true;
-
-                    $makeDropdown($subDropdown, $level+1);
-                }
-            }
-        };
-
-        foreach ($dataArray as $topLevelDropdown) {
-            $makeDropdown($topLevelDropdown, 0);
-        }
-
-        // use $value to set selected options
-        foreach ($allDropdowns as &$dropdown) {
-            $key = $dropdown['name'];
-
-//        Craft::info($allDropdowns, 'multi');
-
-            $savedValue =  (!empty($value) && array_key_exists($key, $value)) ? $value[$key] : null;
-
-            foreach ($dropdown['options'] as &$option) {
-
-                // set selected
-                if ($option['value'] === $savedValue
-                    || ($savedValue === null && isset($option['default']) )
-                ) {
-                    $option['selected'] = true;
-                }
-
-                // make relevant children active
-                if(array_key_exists('subselect', $option)) {
-
-                    // show sub-dropdown if parent is selected
-                    if (array_key_exists('selected', $option)) {
-                        $allDropdowns[$option['subselect']['name']]['active'] = true;
-                    }
-
-//                    $option['hasChild'] = $option['subselect']['name'];
-                    $option['subselect'] = $option['subselect']['name'];
-//                    unset($option['child']);
-                }
-
-
-            }
-        }
-
-        return $allDropdowns;
     }
 }
