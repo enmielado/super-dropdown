@@ -10,6 +10,7 @@
 
 namespace veryfinework\superdropdown\sources;
 
+use craft\elements\Category;
 use craft\helpers\StringHelper;
 use yii\base\Component;
 
@@ -95,7 +96,7 @@ class DropdownSource extends Component
             ];
 
             // set select array key for for categories/entries
-            if ($this->elementType === 'categories') {
+            if ($this->elementType === Category::class) {
                 $selectName = (bool)$element->parent ? StringHelper::toKebabCase($element->parent->title) : $this->topLevelName;
                 $subselectName =  StringHelper::toKebabCase($element->title);
             } else {

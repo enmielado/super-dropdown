@@ -32,7 +32,7 @@ class CategoriesSource extends DropdownSource
      *
      * @var string
      */
-    public $elementType = 'categories';
+    public $elementType = Category::class;
 
     public function getElements($field) : void
     {

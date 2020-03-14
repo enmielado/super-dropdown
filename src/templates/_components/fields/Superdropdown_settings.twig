@@ -75,6 +75,18 @@
         }) }}
         </div>
 
+        {{ forms.selectField({
+                label: "Return Value",
+                instructions: "If you set this to Element, then in your Twig templates this field will return the Element (Category/Entry) that has the id of the final value selected in the dropdown.",
+                id: 'returnType',
+                name: 'returnType',
+                options: [
+                        { value: 'array', label: 'Array' },
+                        { value: 'element', label: 'Element' }
+                ],
+                value: field['returnType'],
+        }) }}
+
         {{ forms.textField({
                 label: "Maximum Nesting Level",
                 instructions: "Defaults to all levels.",
@@ -106,7 +118,7 @@
 <div id="sourcetype-template" {% if field.sourceType != 'template' %}class="hidden"{% endif %}>
 {{ forms.textField({
         label: 'Template',
-        instructions: 'A path to a template that returns properly formatted JSON',
+        instructions: 'A path to a template that returns properly formatted JSON. See docs.',
         id: 'template',
         name: 'template',
         value: field['template']
@@ -128,7 +140,6 @@
 
 {{ forms.selectField({
         label: "Layout",
-        instructions: "The arrangement of the dropdowns.",
         id: 'layout',
         name: 'layout',
         options: [

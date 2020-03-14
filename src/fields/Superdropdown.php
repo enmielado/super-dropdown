@@ -11,12 +11,15 @@
 namespace veryfinework\superdropdown\fields;
 
 use Craft;
+use craft\base\Element;
 use craft\base\ElementInterface;
 use craft\base\Field;
+use craft\elements\db\ElementQuery;
 use craft\helpers\Json;
 use craft\elements\Category;
 use craft\elements\Entry;
 use craft\helpers\Html;
+use craft\helpers\StringHelper;
 use craft\web\View;
 
 use veryfinework\superdropdown\assetbundles\superdropdownfield\SuperdropdownFieldAsset;
@@ -71,9 +74,21 @@ class Superdropdown extends Field
     public $layout = 'inline';
 
     /**
-     * @var null
+     * Element class
+     *
+     * @var string
      */
     public $elementType = 'categories';
+
+    /**
+     * Element class
+     *
+     * @var string
+     */
+    public $elementTypeMap = [
+        'entries' => Entry::class,
+        'categories' => Category::class
+    ];
 
     /**
      * Character limit on labels for elements
@@ -116,6 +131,13 @@ class Superdropdown extends Field
      * @var string
      */
     public $template = '';
+
+    /**
+     * Whether to return an array or an Element
+     *
+     * @var string
+     */
+    public $returnType = 'array';
 
     // Static Methods
     // =========================================================================
@@ -183,6 +205,24 @@ class Superdropdown extends Field
             }
         }
 
+        // return an element for site requests if requested
+        if ($this->returnType === 'element'
+            && $this->sourceType === 'element'
+            && !Craft::$app->request->isCpRequest
+            && $element
+        ) {
+
+            $elementId = StringHelper::beforeFirst(array_pop($value), ':');
+
+            /** @var Element $class */
+            $class = $this->elementTypeMap[$this->elementType];
+            /** @var ElementQuery $value */
+            $value = $class::find()
+                ->id($elementId)
+                ->one();
+
+        }
+
         return $value;
     }
 
@@ -202,6 +242,22 @@ class Superdropdown extends Field
             'sections' => $this->makeOptionsFromSources($availableSections)
         ];
     }
+
+//    public function getElementOptions(): array
+//    {
+//        return $this->makeOptionsFromSources([
+//            [
+//                'label' => 'Entries',
+//                'key' => Entry::class
+//            ],
+//            [
+//                'label' => 'Categories',
+//                'key' => Category::class
+//            ]
+//
+//        ]);
+//
+//    }
 
     public function makeOptionsFromSources($sources): array
     {
