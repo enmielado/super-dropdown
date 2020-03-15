@@ -205,21 +205,22 @@ class Superdropdown extends Field
             }
         }
 
-        // return an element for site requests if requested
+        // return an element when rendering page templates if requested
         if ($this->returnType === 'element'
             && $this->sourceType === 'element'
-            && !Craft::$app->request->isCpRequest
+            && !Craft::$app->view->isRenderingPageTemplate
             && $element
         ) {
 
             $elementId = StringHelper::beforeFirst(array_pop($value), ':');
 
-            /** @var Element $class */
             $class = $this->elementTypeMap[$this->elementType];
-            /** @var ElementQuery $value */
-            $value = $class::find()
-                ->id($elementId)
-                ->one();
+
+            $value = Craft::$app->elements->getElementById($elementId, $class);
+
+//            $value = $class::find()
+//                ->id($elementId)
+//                ->one();
 
         }
 
