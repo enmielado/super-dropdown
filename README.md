@@ -1,7 +1,7 @@
 # Super Dropdown plugin for Craft CMS 3.x
 A custom field for the Craft CMS for building multiple and hierarchical dropdown fields from native elements or data.
 
-![Screenshot](http://veryfine.work/assets/img/multi-dropdown-icon6.png)
+![Screenshot](http://veryfine.work/assets/img/video1.gif)
 
 ## Requirements
 This plugin requires Craft CMS 3.0.0-beta.23 or later.
