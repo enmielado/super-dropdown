@@ -23,7 +23,7 @@
         <select
             {%- if id is defined %} id="{{ id }}[{{ dropdownKey }}]"{% endif %}
             {%- if name is defined %} name="{{ name }}[{{ dropdownKey }}]"{% endif %}
-            data-id="{{ id }}"
+            data-key="{{ dropdownKey }}"
             {%- if dropdown.initialvalue is defined %} data-initialvalue="{{ dropdown.initialvalue }}" {% endif %}
             {%- set selectClass = [
                 '',

@@ -78,14 +78,14 @@
             if (targetData !== null) {
 
                 // TODO: fields-conditionConfig[creditRangeMin,creditRangeMax]
-                const selectId = select.getAttribute('data-id');
+                const selectKey = select.getAttribute('data-key');
 
                 const targets = targetData.split(',');
 
                 targets.forEach(function(target) {
 
                     // show target dropdown & set its first option as selected
-                    const childSelect = document.getElementById("fields-" + selectId + '[' + target + ']');
+                    const childSelect = _self.element.querySelector('[data-key="' + target + '"]');
                     childSelect.closest('.sd-selectWrap').classList.add("isActive");
                     // set the first option as selected if there is no selection
                     if (childSelect.selectedIndex === -1) {
