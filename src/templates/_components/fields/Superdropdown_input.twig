@@ -14,7 +14,7 @@
         {%- set value = (dropdown.value is defined ? dropdown.value : null) %}
         {%- set hasOptgroups = false -%}
 
-        {%- set conditionalClass = (dropdown.isConditional is defined) ? 'isConditional' : null %}
+        {%- set conditionalClass = (dropdown.isConditional is defined) ? 'isConditional' : '' %}
 
         <div class="sd-selectWrap sd-labelLayout--{{ labelLayout }} {{ conditionalClass }}">
 
@@ -23,6 +23,7 @@
         <select
             {%- if id is defined %} id="{{ id }}[{{ dropdownKey }}]"{% endif %}
             {%- if name is defined %} name="{{ name }}[{{ dropdownKey }}]"{% endif %}
+            data-id="{{ id }}"
             {%- if dropdown.initialvalue is defined %} data-initialvalue="{{ dropdown.initialvalue }}" {% endif %}
             {%- set selectClass = [
                 '',
@@ -47,7 +48,7 @@
                     {% set optionDisabled = (option.disabled is defined ? option.disabled : false) %}
                     <option
                             value="{{ optionValue }}"
-                            {% if (option.subselect is defined) %} data-target="{{ id }}[{{ option.subselect }}]" {% endif %}
+                            {% if (option.subselect is defined) %} data-trgt="{{ option.subselect }}" {% endif %}
                             {% if (option.selected is defined) %} selected {% endif %}
                             {% if optionDisabled %} disabled{% endif %}
                     >{{ optionLabel }}</option>

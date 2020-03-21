@@ -26,7 +26,7 @@
     Superdropdown.prototype = {
 
         selects: [],
-        activeChildofSelect: {},
+        activeChildrenOfSelect: {},
 
         init() {
 
@@ -41,6 +41,9 @@
                 // set initial values
                 const value = select.getAttribute('data-initialvalue');
                 select.selectedIndex = parseInt(value);
+
+                // initialize child selects array
+                _self.activeChildrenOfSelect[select.id] = []
 
                 // set up initial select states
                 const selectedOption = select.selectedOptions[0];
@@ -59,7 +62,7 @@
             const select = e.target;
             const selectedOption = select.selectedOptions[0];
 
-            this.removeChildSelect(select);
+            this.removeChildSelects(select);
 
             this.showSelect(select, selectedOption);
 
@@ -68,25 +71,35 @@
 
         showSelect(select, selectedOption) {
 
-            const target = selectedOption.getAttribute('data-target');
+            const _self = this;
 
-            // show target dropdown & set its first option as selected
-            if (target !== null) {
+            const targetData = selectedOption.getAttribute('data-trgt');
 
-                const childSelect = document.getElementById(target);
-                childSelect.closest('.sd-selectWrap').classList.add("isActive");
-                // set the first option as selected if there is no selection
-                if (childSelect.selectedIndex === -1) {
-                    childSelect.selectedIndex = 0;
-                }
+            if (targetData !== null) {
 
-                // register child select on this select
-                this.activeChildofSelect[select.id] = childSelect;
+                // TODO: fields-conditionConfig[creditRangeMin,creditRangeMax]
+                const selectId = select.getAttribute('data-id');
 
-                // show children
-                const childSelectedOption = childSelect.selectedOptions[0];
-                this.showSelect(childSelect, childSelectedOption);
+                const targets = targetData.split(',');
 
+                targets.forEach(function(target) {
+
+                    // show target dropdown & set its first option as selected
+                    const childSelect = document.getElementById("fields-" + selectId + '[' + target + ']');
+                    childSelect.closest('.sd-selectWrap').classList.add("isActive");
+                    // set the first option as selected if there is no selection
+                    if (childSelect.selectedIndex === -1) {
+                        childSelect.selectedIndex = 0;
+                    }
+
+                    // register child select on this select
+                    _self.activeChildrenOfSelect[select.id].push( childSelect );
+
+                    // show children
+                    const childSelectedOption = childSelect.selectedOptions[0];
+                    _self.showSelect(childSelect, childSelectedOption);
+
+                });
             }
         },
 
@@ -94,18 +107,22 @@
             select.closest('.sd-selectWrap').classList.remove("isActive");
             select.selectedIndex = -1;
 
-            this.removeChildSelect(select);
+            this.removeChildSelects(select);
 
         },
 
-        removeChildSelect(select) {
+        removeChildSelects(select) {
+
+            const _self = this;
+
             // if a child select is registered on this select, then remove it
-            if (this.activeChildofSelect.hasOwnProperty(select.id))  {
-                const childSelect = this.activeChildofSelect[select.id];
+            this.activeChildrenOfSelect[select.id].forEach( function(childSelect) {
                 // remove child from array
-                delete this.activeChildofSelect[select.id];
-                this.removeSelect(childSelect);
-            }
+                _self.removeSelect(childSelect);
+            });
+
+            // reset to empty
+            this.activeChildrenOfSelect[select.id] = [];
         },
 
         getInputValue() {

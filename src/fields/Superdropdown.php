@@ -416,7 +416,10 @@ class Superdropdown extends Field
             foreach ($dropdown['options'] as $index => &$option) {
 
                 if(array_key_exists('subselect', $option)) {
-                    $conditionalSubselectKeys[] = $option['subselect'];
+                    $allkeys = explode(',', $option['subselect']);
+                    foreach ($allkeys as $key) {
+                        $conditionalSubselectKeys[] = $key;
+                    }
                 }
 
                 // set selected

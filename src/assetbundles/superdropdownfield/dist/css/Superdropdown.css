@@ -36,7 +36,7 @@ form .input > .super-dropdown-field.select {
     display: none;
 }
 .super-dropdown-field .isConditional.isActive {
-    display: block;
+    display: flex;
 }
 .super-dropdown-field.layout-stacked {
     flex-direction: column;
