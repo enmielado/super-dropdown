@@ -42,13 +42,13 @@
                 const value = select.getAttribute('data-initialvalue');
                 select.selectedIndex = parseInt(value);
 
-            });
+                // set up initial select states
+                const selectedOption = select.selectedOptions[0];
+                if (selectedOption) {
+                    _self.showSelect(select, selectedOption);
+                }
 
-            // set up initial select states
-            const selectedOption = this.selects[0].selectedOptions[0];
-            if (selectedOption) {
-                _self.showSelect(this.selects[0], selectedOption);
-            }
+            });
 
             console.log('find me');
 
@@ -74,7 +74,7 @@
             if (target !== null) {
 
                 const childSelect = document.getElementById(target);
-                childSelect.classList.add("isActive");
+                childSelect.closest('.sd-selectWrap').classList.add("isActive");
                 // set the first option as selected if there is no selection
                 if (childSelect.selectedIndex === -1) {
                     childSelect.selectedIndex = 0;
@@ -91,7 +91,7 @@
         },
 
         removeSelect(select) {
-            select.classList.remove("isActive");
+            select.closest('.sd-selectWrap').classList.remove("isActive");
             select.selectedIndex = -1;
 
             this.removeChildSelect(select);

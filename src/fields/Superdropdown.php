@@ -25,6 +25,7 @@ use craft\web\View;
 use veryfinework\superdropdown\assetbundles\superdropdownfield\SuperdropdownFieldAsset;
 use veryfinework\superdropdown\sources\CategoriesSource;
 use veryfinework\superdropdown\sources\EntriesSource;
+use yii\db\Schema;
 
 
 /**
@@ -72,6 +73,13 @@ class Superdropdown extends Field
      * @var string
      */
     public $layout = 'inline';
+
+    /**
+     * How the labels are arranged
+     *
+     * @var string
+     */
+    public $labelLayout = 'inline'; // or 'stacked'
 
     /**
      * Element class
@@ -156,11 +164,21 @@ class Superdropdown extends Field
      */
     public static function valueType(): string
     {
-        return 'array';
+//        return 'array';
+        return 'mixed';
     }
 
     // Public Methods
     // =========================================================================
+
+
+    /**
+     * @inheritdoc
+     */
+    public function getContentColumnType(): string
+    {
+        return Schema::TYPE_STRING;
+    }
 
     /**
      * Returns the validation rules for attributes.
@@ -360,6 +378,7 @@ class Superdropdown extends Field
                 'value' => $value,
                 'field' => $this,
                 'namespacedId' => $namespacedId,
+                'labelLayout' => $this->labelLayout,
                 'dropdowns' => $allDropdowns,
             ]
         );

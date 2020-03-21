@@ -124,6 +124,17 @@
         value: field['template']
     })
 }}
+
+{{ forms.selectField({
+        label: "Label Layout",
+        id: 'labelLayout',
+        name: 'labelLayout',
+        options: [
+                { value: 'inline', label: 'Inline' },
+                { value: 'stacked', label: 'Stacked' },
+        ],
+        value: field['labelLayout']
+}) }}
 </div>
 
 <div id="sourcetype-jsonData" {% if field.sourceType != 'jsonData' %}class="hidden"{% endif %}>
