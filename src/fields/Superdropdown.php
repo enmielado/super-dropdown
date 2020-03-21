@@ -422,8 +422,8 @@ class Superdropdown extends Field
                     }
                 }
 
-                // set selected
-                if (($option['value'] !== null && $option['value'] === $savedValue)
+                // set selected -- fuzzy compare for integer strings
+                if (($option['value'] !== null && $option['value'] == $savedValue)
                     || ($savedValue === null && isset($option['default']) )
                 ) {
                     $option['selected'] = true;
