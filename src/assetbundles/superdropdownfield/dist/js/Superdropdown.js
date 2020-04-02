@@ -38,17 +38,16 @@
 
                 select.addEventListener('change', _self.handleChange.bind(_self) );
 
-                // set initial values
+                // set initial value
                 const value = select.getAttribute('data-initialvalue');
                 select.selectedIndex = parseInt(value);
 
-                // initialize child selects array
-                _self.activeChildrenOfSelect[select.id] = []
-
-                // set up initial select states
-                const selectedOption = select.selectedOptions[0];
-                if (selectedOption) {
-                    _self.showSelect(select, selectedOption);
+                // set up initial states for children
+                if (select.classList.contains('type-primary')) {
+                    const selectedOption = select.selectedOptions[0];
+                    if (selectedOption) {
+                        _self.showSelect(select, selectedOption);
+                    }
                 }
 
             });
@@ -77,7 +76,6 @@
 
             if (targetData !== null) {
 
-                // TODO: fields-conditionConfig[creditRangeMin,creditRangeMax]
                 const selectKey = select.getAttribute('data-key');
 
                 const targets = targetData.split(',');
@@ -90,6 +88,12 @@
                     // set the first option as selected if there is no selection
                     if (childSelect.selectedIndex === -1) {
                         childSelect.selectedIndex = 0;
+                    }
+                    childSelect.setAttribute('data-initialvalue', childSelect.selectedIndex);
+
+                    // initialize child selects array if has not been
+                    if (!_self.activeChildrenOfSelect.hasOwnProperty(select.id)) {
+                        _self.activeChildrenOfSelect[select.id] = []
                     }
 
                     // register child select on this select
@@ -104,6 +108,7 @@
         },
 
         removeSelect(select) {
+
             select.closest('.sd-selectWrap').classList.remove("isActive");
             select.selectedIndex = -1;
 
@@ -116,10 +121,12 @@
             const _self = this;
 
             // if a child select is registered on this select, then remove it
-            this.activeChildrenOfSelect[select.id].forEach( function(childSelect) {
-                // remove child from array
-                _self.removeSelect(childSelect);
-            });
+            if (this.activeChildrenOfSelect.hasOwnProperty(select.id)) {
+                this.activeChildrenOfSelect[select.id].forEach(function(childSelect) {
+                    // remove child from array
+                    _self.removeSelect(childSelect);
+                });
+            }
 
             // reset to empty
             this.activeChildrenOfSelect[select.id] = [];

@@ -9,20 +9,20 @@
 
   {% for level in 1..maxNestingLevel %}
 
-    {% set entries = craft.entries.section(entrySectionHandle).level(level).all() %}
-
     {% set options = [] %}
 
     {% set dropdownName = 'entries' %}
 
+    {% set entries = craft.entries
+      .section(entrySectionHandle)
+      .all() %}
+
     {% for entry in entries %}
 
-      {# find the wouldbe name of the sub dropdown #}
+      {% set subselect = '' %}
       {% if entry.hasDescendants == true %}
         {% set subselect = entry.title %}
       {% else %}
-        {% set subselect = '' %}
-      {% endif %}
 
       {% set option = [{
         "label": entry.title,
