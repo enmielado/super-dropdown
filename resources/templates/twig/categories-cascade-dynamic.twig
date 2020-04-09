@@ -1,5 +1,5 @@
 {# cascading category dropdowns #}
-{%- spaceless -%}
+{%- apply spaceless -%}
 
   {% set categoryGroupHandle = 'dessert' %}
   {% set maxNestingLevel = 2 %}
@@ -64,4 +64,4 @@
 
   {{ dropdowns | json_encode() | raw }}
 
-{%- endspaceless -%}
+{%- endapply -%}

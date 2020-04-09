@@ -1,8 +1,8 @@
 {# cascading category dropdowns #}
-{%- spaceless -%}
+{%- apply spaceless -%}
 {% set categoryGroupHandle = 'dessert' %}
 {% set maxNestingLevel = 3 %}
 
   {{ craft.superdropdown.categoryCascade( categoryGroupHandle, maxNestingLevel ) | raw }}
 
-{%- endspaceless -%}
+{%- endapply -%}

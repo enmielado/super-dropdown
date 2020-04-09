@@ -1,5 +1,5 @@
 {# cascading entry dropdowns #}
-{%- spaceless -%}
+{%- apply spaceless -%}
 
   {% set entrySectionHandle = 'blog' %}
   {% set maxNestingLevel = 2 %}
@@ -64,4 +64,4 @@
 
   {{ dropdowns | json_encode() | raw }}
 
-{%- endspaceless -%}
+{%- endapply -%}

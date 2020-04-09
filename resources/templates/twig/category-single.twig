@@ -1,5 +1,5 @@
 {# single category dropdown #}
-{%- spaceless -%}
+{%- apply spaceless -%}
 
   {% set categoryGroupHandle = 'categoryGroupHandle' %}
 
@@ -32,4 +32,4 @@
 
   {{ dropdowns | json_encode() | raw }}
 
-{%- endspaceless -%}
+{%- endapply -%}

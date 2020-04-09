@@ -1,7 +1,7 @@
-{# helpful source: https://twigfiddle.com/ #}
+{# helpful resource: https://twigfiddle.com/ #}
 
 {# Side-by-side semester and year dropdowns for next 5 years #}
-{%- spaceless -%}
+{%- apply spaceless -%}
 
   {% set startYear = "now"|date("Y") %}
   {% set endYear = "now"|date("Y") + 5 %}
@@ -42,4 +42,4 @@
 
   {{ dropdowns | json_encode() | raw }}
 
-{%- endspaceless -%}
+{%- endapply -%}

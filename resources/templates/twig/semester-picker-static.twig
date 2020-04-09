@@ -1,5 +1,5 @@
 {# Side-by-side semester and year dropdowns #}
-{%- spaceless -%}
+{%- apply spaceless -%}
 
 {% set dropdowns = [
   {
@@ -46,4 +46,4 @@
 
 {{ dropdowns | json_encode() | raw }}
 
-{%- endspaceless -%}
+{%- endapply -%}

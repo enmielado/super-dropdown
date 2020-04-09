@@ -1,5 +1,5 @@
 {# Building and Room selector dropdown #}
-{%- spaceless -%}
+{%- apply spaceless -%}
 
   {% set dropdowns = [
     {
@@ -139,4 +139,4 @@
 
   {{ dropdowns | json_encode() | raw }}
 
-{%- endspaceless -%}
+{%- endapply -%}
