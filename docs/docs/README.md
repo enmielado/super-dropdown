@@ -1,7 +1,10 @@
-![Screenshot](http://veryfine.work/assets/img/video1.gif)
-
 # Super Dropdown plugin for Craft CMS 3.x
+
 A custom field for the Craft CMS for building multiple and hierarchical dropdown fields from native elements or data.
+
+![Dropdown Cascade Animated Gif](img/cascade.gif)
+
+![Dropdown Condition Animated Gif](img/condition.gif)
 
 ## Some Things You Can Do With this Plugin
 
@@ -35,9 +38,12 @@ Super Dropdown transforms structured data into series of linked dropdowns that a
 
 ### Advantages of a Super Dropdown Field
 * Field options can be dynamic
-* Simplify selecting Categories and Entries by replacing the the native modal selector with this field. (See 'Considerations' below.)
+* Simplify selecting Categories and Entries by replacing the the native modal selector with this field. (See 'Considerations.')
 * Make field layouts in entry forms more compact by combining multiple fields into a single set of dropdowns.
 * Skip the complications of coding linked dropdowns
+
+### Considerations
+Please note that this plugin is not a drop-in replacement for the native Entries and Categories fields. If you change one of those fields to this field type, the data will not be carried over. Technically, this is not what Craft refers to as a 'relational' field, which means that it does not create a database relation between elements.
 
 ## Using Super Dropdown
 
@@ -48,7 +54,7 @@ Super Dropdown transforms structured data into series of linked dropdowns that a
     * `Template` Provide a path to a Twig template that returns JSON data. There you can access the complete Craft API to generate options for the dropdowns.
     * `JSON` Paste static JSON directly into the field settings.
 3. If you selected `Element` or `JSON` then simply make selections from the available field options.
-4. If you selected `Template` as the Source, then you need to add a template file to your site’s Template folder that outputs JSON data. It is recommenced to store your Super Dropdown field templates in their own folder. If you create a folder in your `Templates` folder named `_fieldData` and create a file within that folder named `myDropdown.twig` then the value of the `Template` field would be `_fieldData/myDropdown`. See the information below for providing properly formatted data from a Twig template.
+4. If you selected `Template` as the Source, then you need to add a template file to your site’s Template folder that outputs JSON data. It is recommenced to store your Super Dropdown field templates in their own folder. If you create a folder in your `Templates` folder named `_fieldData` and create a file within that folder named `myDropdown.twig` then the value of the `Template` field would be `_fieldData/myDropdown`. See [Data Sources](#data-sources) below for providing properly formatted data from a Twig template.
 
 ### Other Field Options
 
@@ -60,9 +66,6 @@ Super Dropdown transforms structured data into series of linked dropdowns that a
 | **Label Length** | Truncate long Category or Entry titles to make them practical as dropdown field options. | 
 | **Label Layout** | When including `beforeText` and `afterText` values you can choose whether these labels are displayed above and below the field, or to the left and right. Use `inline` to create sentence style fields. | 
 | **Maximum Nesting Level** | Limit the nesting level of Categories and Entries. | 
-
-### Considerations
-Please note that this plugin is not a drop-in replacement for the native Entries and Categories fields. If you change one of those fields to this field type, the data will not be carried over. Technically, this is not what Craft refers to as a 'relational' field, which means that it does not create a database relation between elements.
 
 ## Accessing Field Values in Templates
 Fields are returned as either a hash, or in the case of Elements (Categories & Entries) they may optionally be returned as an Element. 
@@ -144,7 +147,9 @@ See the `/resources/templates` folder in this plugin’s source for example code
 
 ### JSON Data Examples
 
-For more examples, see the `resources\templates` folder of this plugin’s source. 
+For more examples, see the `resources/templates` folder of this plugin’s source. 
+
+#### Static Data
 
 A basic example of static dropdown data that will produce one dropdown and one leaf.
 
@@ -184,6 +189,8 @@ A basic example of static dropdown data that will produce one dropdown and one l
   }
 ]
 ```
+
+#### Dynamic Data
 
 A template that renders dynamic JSON data for a semester picker. Notice the ‘type’ of ‘primary’ for both dropdowns. Put this in a Twig template to test it.
 
@@ -230,6 +237,78 @@ A template that renders dynamic JSON data for a semester picker. Notice the ‘t
   {{ dropdowns | json_encode() | raw }}
 
 {% endapply %}
+```
+#### Dynamic Elements Data
+
+A template that renders dynamic JSON data from nested Entries. This creates a set of cascading dropdowns for selecting an entry. Note that it is possible to do the same by using field settings; this example is simply intended as a base on which to construct more custom needs. 
+
+```twig
+{%- apply spaceless -%}
+
+  {% set entrySectionHandle = 'blog' %}
+  {% set maxNestingLevel = 2 %}
+
+  {% set dropdowns = [] %}
+  {% set subSelects = [] %}
+
+  {% for level in 1..maxNestingLevel %}
+
+    {% set options = [] %}
+
+    {% set dropdownName = 'entries' %}
+
+    {% set entries = craft.entries
+      .section(entrySectionHandle)
+      .all() %}
+
+    {% for entry in entries %}
+
+      {% set subselect = '' %}
+      {% if entry.hasDescendants == true %}
+        {% set subselect = entry.title %}
+      {% else %}
+
+      {% set option = [{
+        "label": entry.title,
+        "value": entry.id,
+        "subselect": subselect
+      }] %}
+
+      {% set options = options|merge( option ) %}
+
+      {# set dropdopwn name to name of parent #}
+      {% if loop.index == 1 %}
+        {% if level > 1 %}
+          {% set dropdownName = entry.parent.title %}
+        {% else %}
+          {% set dropdownName = entryGroupHandle %}
+        {% endif %}
+      {% endif %}
+
+    {% endfor %}
+
+    {# the first round sets the first dropdown as the primary one #}
+    {% if loop.index == 1 %}
+      {% set type = "primary" %}
+    {% else %}
+      {% set type = "conditional" %}
+    {% endif %}
+
+    {% set dropdown = [
+      {
+        "name": dropdownName,
+        "type": type,
+        "options": options
+      }
+    ] %}
+
+    {% set dropdowns = dropdowns|merge( dropdown ) %}
+
+  {% endfor %}
+
+  {{ dropdowns | json_encode() | raw }}
+
+{%- endapply -%}
 ```
 
 ## Roadmap
