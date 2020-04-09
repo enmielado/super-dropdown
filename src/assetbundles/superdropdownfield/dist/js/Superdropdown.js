@@ -153,7 +153,3 @@
     }
 
 })(window, document);
-
-// const dropdown = window.CE_Superdropdown(options);
-// const value = dropdown.getInputValue();
-
